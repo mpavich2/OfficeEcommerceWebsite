@@ -6,7 +6,7 @@ using MichaelPavichFinal.Models.DomainModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace MichaelPavichFinal.Models.DataLayer
+namespace MichaelPavichFinal.Models
 {
     public class OfficeProductContext : IdentityDbContext<User>
     {

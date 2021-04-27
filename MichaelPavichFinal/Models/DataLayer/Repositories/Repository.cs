@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MichaelPavichFinal.Models.DataLayer;
 using Microsoft.EntityFrameworkCore;
 
 namespace MichaelPavichFinal.Models
