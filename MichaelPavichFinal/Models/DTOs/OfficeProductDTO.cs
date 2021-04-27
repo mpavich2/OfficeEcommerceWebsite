@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MichaelPavichFinal.Models.DTOs
+namespace MichaelPavichFinal.Models
 {
     public class OfficeProductDTO
     {

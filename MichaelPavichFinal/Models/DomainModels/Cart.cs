@@ -23,7 +23,7 @@ namespace MichaelPavichFinal.Models
             responseCookies = ctx.Response.Cookies;
         }
 
-        public void Load(Repository<Book> data)
+        public void Load(Repository<OfficeProduct> data)
         {
             items = session.GetObject<List<CartItem>>(CartKey);
             if (items == null) {
@@ -32,16 +32,16 @@ namespace MichaelPavichFinal.Models
             }
             if (storedItems?.Count > items?.Count) {
                 foreach (CartItemDTO storedItem in storedItems) {
-                    var book = data.Get(new QueryOptions<Book> {
+                    var book = data.Get(new QueryOptions<OfficeProduct> {
                         Include = "BookAuthors.Author, Genre",
-                        Where = b => b.BookId == storedItem.BookId
+                        Where = b => b.OfficeProductId == storedItem.OfficeProductId
                     });
                     if (book != null) {
-                        var dto = new BookDTO();
+                        var dto = new OfficeProductDTO();
                         dto.Load(book);
 
                         CartItem item = new CartItem {
-                            Book = dto,
+                            Product = dto,
                             Quantity = storedItem.Quantity
                         };
                         items.Add(item);
@@ -56,10 +56,10 @@ namespace MichaelPavichFinal.Models
         public IEnumerable<CartItem> List => items;
 
         public CartItem GetById(int id) => 
-            items.FirstOrDefault(ci => ci.Book.BookId == id);
+            items.FirstOrDefault(ci => ci.Product.OfficeProductId == id);
 
         public void Add(CartItem item) {
-            var itemInCart = GetById(item.Book.BookId);
+            var itemInCart = GetById(item.Product.OfficeProductId);
             
             if (itemInCart == null) {
                 items.Add(item);
@@ -71,7 +71,7 @@ namespace MichaelPavichFinal.Models
 
         public void Edit(CartItem item)
         {
-            var itemInCart = GetById(item.Book.BookId);
+            var itemInCart = GetById(item.Product.OfficeProductId);
             if (itemInCart != null) {
                 itemInCart.Quantity = item.Quantity;
             }
