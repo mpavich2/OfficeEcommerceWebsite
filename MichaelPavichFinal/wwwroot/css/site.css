@@ -58,10 +58,14 @@ html {
     min-height: 100%;
 }
 
+.homeBody {
+    margin-bottom: 60px;
+    background-image: url("../images/Background.png");
+}
+
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
-    background-image: url(../images/Background.png);
 }
 .footer {
   position: absolute;

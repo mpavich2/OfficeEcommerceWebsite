@@ -24,7 +24,7 @@
     @RenderSection("scripts", false)
 </head>
 
-<body>
+<body class="homeBody">
     <nav class="navbar navbar-expand-md navbar-dark">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu"
                 aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,17 +39,17 @@
                     </a>
                 </li>
                 <li class="nav-item @Nav.Active("Products", current)">
-                    <a class="nav-link" asp-area="">
+                    <a class="nav-link" asp-controller="Products" asp-action="List" asp-area="">
                         <span class="fas fa-store"></span>&nbsp;Products
                     </a>
                 </li>
-                <li class="nav-item @Nav.Active("About Us", current)">
-                    <a class="nav-link" asp-area="">
+                <li class="nav-item @Nav.Active("About", current)">
+                    <a class="nav-link" asp-controller="About" asp-action="Index" asp-area="">
                         <span class="fas fa-info-circle"></span>&nbsp;About Us
                     </a>
                 </li>
-                <li class="nav-item @Nav.Active("Contact Us", current)">
-                    <a class="nav-link" asp-area="">
+                <li class="nav-item @Nav.Active("Contact", current)">
+                    <a class="nav-link" asp-controller="Contact" asp-action="Index" asp-area="">
                         <span class="fas fa-phone"></span>&nbsp;Contact Us
                     </a>
                 </li>
