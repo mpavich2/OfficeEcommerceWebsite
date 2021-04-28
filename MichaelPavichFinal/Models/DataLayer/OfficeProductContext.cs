@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MichaelPavichFinal.Models
 {
-    public class OfficeProductContext : IdentityDbContext<User>
+    public class OfficeProductContext : DbContext
     {
         public OfficeProductContext(DbContextOptions<OfficeProductContext> options)
             : base(options)
