@@ -57,6 +57,7 @@ namespace MichaelPavichFinal
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
             }).AddEntityFrameworkStores<OfficeProductContext>()
               .AddDefaultTokenProviders();
         }
@@ -102,6 +103,8 @@ namespace MichaelPavichFinal
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}/{slug?}");
             });
+
+            OfficeProductContext.CreateAdminUser(app.ApplicationServices).Wait();
         }
     }
 }
