@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MichaelPavichFinal.Models
 {
-    public class OfficeProductDTO
+    public class OfficeProductDTO : GridDTO
     {
         public int OfficeProductId { get; set; }
         public string Name { get; set; }
