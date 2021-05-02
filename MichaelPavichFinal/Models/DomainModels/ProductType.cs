@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MichaelPavichFinal.Models.DomainModels
+namespace MichaelPavichFinal.Models
 {
     public class ProductType
     {
