@@ -33,7 +33,7 @@ namespace MichaelPavichFinal.Models
             if (storedItems?.Count > items?.Count) {
                 foreach (CartItemDTO storedItem in storedItems) {
                     var book = data.Get(new QueryOptions<OfficeProduct> {
-                        Include = "BookAuthors.Author, Genre",
+                        Include = "Type",
                         Where = b => b.OfficeProductId == storedItem.OfficeProductId
                     });
                     if (book != null) {

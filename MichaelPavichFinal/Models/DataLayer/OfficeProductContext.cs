@@ -19,6 +19,8 @@ namespace MichaelPavichFinal.Models
 
         public DbSet<ProductType> Types { get; set; }
 
+        public DbSet<Image> Images { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
