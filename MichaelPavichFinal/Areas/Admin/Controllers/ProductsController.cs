@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MichaelPavichFinal.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MichaelPavichFinal.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
+    [Area("Admin")]
     public class ProductsController : Controller
     {
         private OfficeProductUnitOfWork data { get; set; }
@@ -61,8 +64,8 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
                 }
                 if (search.IsType)
                 {
-                    int index = vm.SearchTerm.LastIndexOf(' ');
-                    vm.Header = $"Search results for product type '{vm.SearchTerm}'";
+                    options.Where = b => b.ProductTypeId.Contains(vm.SearchTerm);
+                    vm.Header = $"Search results for genre ID '{vm.SearchTerm}'";
                 }
                 vm.Products = data.Products.List(options);
                 return View("SearchResults", vm);
@@ -90,7 +93,7 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
             else
             {
                 Load(vm, "Add");
-                return View("Book", vm);
+                return View("Product", vm);
             }
         }
 
@@ -111,7 +114,7 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
             else
             {
                 Load(vm, "Edit");
-                return View("Book", vm);
+                return View("Product", vm);
             }
         }
 
@@ -129,9 +132,9 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
 
         private ViewResult GetBook(int id, string operation)
         {
-            var book = new OfficeProductViewModel();
-            Load(book, operation, id);
-            return View("Book", book);
+            var product = new OfficeProductViewModel();
+            Load(product, operation, id);
+            return View("Product", product);
         }
         private void Load(OfficeProductViewModel vm, string op, int? id = null)
         {

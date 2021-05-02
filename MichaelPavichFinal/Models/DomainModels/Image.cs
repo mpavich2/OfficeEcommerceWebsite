@@ -7,8 +7,8 @@ namespace MichaelPavichFinal.Models
 {
     public class Image
     {
-        public int Id { get; set; }
-        public string ImageTitle { get; set; }
-        public byte[] ImageData { get; set; }
+        public int ImageId { get; set; }
+        public string Title { get; set; }
+        public byte[] Data { get; set; }
     }
 }
