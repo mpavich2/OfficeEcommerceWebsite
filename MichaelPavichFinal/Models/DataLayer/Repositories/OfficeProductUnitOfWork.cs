@@ -40,6 +40,21 @@ namespace MichaelPavichFinal.Models
             }
         }
 
+        private Repository<Image> imageData;
+
+        public Repository<Image> Images
+        {
+            get
+            {
+                if (this.imageData == null)
+                {
+                    this.imageData = new Repository<Image>(context);
+                }
+
+                return this.imageData;
+            }
+        }
+
         public void Save() => context.SaveChanges();
     }
 }

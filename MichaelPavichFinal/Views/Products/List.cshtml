@@ -28,29 +28,39 @@
         @* for each table column, update the route dictionary with the field to sort by, and then use
             that route dictionary and the current route to create route segments for sorting link *@
         <thead class="thead-dark">
-            <tr>
-                <th>
-                    @{ routes.SetSortAndDirection(nameof(OfficeProduct.Name), current); }
-                    <a asp-action="List" asp-all-route-data="@routes"
-                       class="text-white">Name</a>
-                </th>
-                <th>
-                    @{ routes.SetSortAndDirection(nameof(ProductType), current); }
-                    <a asp-action="List" asp-all-route-data="@routes"
-                       class="text-white">Type</a>
-                </th>
-                <th>
-                    @{ routes.SetSortAndDirection(nameof(OfficeProduct.Price), current); }
-                    <a asp-action="List" asp-all-route-data="@routes"
-                       class="text-white">Price</a>
-                </th>
-                <th></th>
-            </tr>
+        <tr>
+            <th>Image</th>
+            <th>
+                @{ routes.SetSortAndDirection(nameof(OfficeProduct.Name), current); }
+                <a asp-action="List" asp-all-route-data="@routes"
+                   class="text-white">Name</a>
+            </th>
+            <th>
+                @{ routes.SetSortAndDirection(nameof(ProductType), current); }
+                <a asp-action="List" asp-all-route-data="@routes"
+                   class="text-white">Type</a>
+            </th>
+            <th>
+                @{ routes.SetSortAndDirection(nameof(OfficeProduct.Price), current); }
+                <a asp-action="List" asp-all-route-data="@routes"
+                   class="text-white">Price</a>
+            </th>
+            <th></th>
+        </tr>
         </thead>
         <tbody>
             @foreach (OfficeProduct product in Model.Products)
             {
                 <tr>
+                    @foreach (Image image in Model.Images)
+                    {
+                        @if (image.ImageId == product.ImageId)
+                        {
+                            <td>
+                                <img src="@product.Image.Url()" class="img-fluid img-thumbnail" alt="@product.Name" style="max-height: 250px"/>
+                            </td>
+                        }
+                    }
                     <td>
                         <a asp-action="Details" asp-route-id="@product.OfficeProductId"
                            asp-route-slug="@product.Name.Slug()">

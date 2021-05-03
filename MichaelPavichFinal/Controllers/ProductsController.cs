@@ -35,6 +35,7 @@ namespace MichaelPavichFinal.Controllers
                 {
                     OrderBy = g => g.Name
                 }),
+                Images = data.Images.List(new QueryOptions<Image>()),
                 CurrentRoute = builder.CurrentRoute,
                 TotalPages = builder.GetTotalPages(data.Products.Count)
             };
@@ -62,12 +63,14 @@ namespace MichaelPavichFinal.Controllers
 
         public ViewResult Details(int id)
         {
-            var book = data.Products.Get(new QueryOptions<OfficeProduct>
+            var product = data.Products.Get(new QueryOptions<OfficeProduct>
             {
                 Include = "Type",
                 Where = b => b.OfficeProductId == id
             });
-            return View(book);
+            var image = data.Images.Get(product.ImageId);
+            ViewBag.Url = image.Url();
+            return View(product);
         }
     }
 }

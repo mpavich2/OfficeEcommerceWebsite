@@ -12,5 +12,6 @@ namespace MichaelPavichFinal.Models
         public int TotalPages { get; set; }
 
         public IEnumerable<ProductType> ProductTypes { get; set; }
+        public IEnumerable<Image> Images { get; set; }
     }
 }

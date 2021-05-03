@@ -4,21 +4,22 @@
     ViewData["Title"] = " | Product Details";
 }
 
-<h1>Product Details</h1>
+<h1>@Model.Name</h1>
+<h6>@Model.Type.Name</h6>
 
-<table class="table table-bordered table-sm">
-    <thead>
-    <tr class="thead-dark">
-        <th>Title:</th><th>@Model.Name</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr><td>Price:</td><td>@Model.Price.ToString("c")</td></tr>
-    <tr><td>Genre:</td><td>@Model.Type.Name</td></tr>
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-md-4">
+        <img src="@ViewBag.Url" class="img-fluid img-thumbnail" alt="Product Image" />
+    </div>
+    <div class="col-md-8">
+        <h3 class="price">@Model.Price.ToString("c")</h3>
+        
+        <p>We offer delivery and installation.</p>
+        <p>Assembly is always included!</p>
 
-<form asp-action="Add" asp-controller="Cart" method="post">
-    <button type="submit" name="id" value="@Model.OfficeProductId"
-            class="btn btn-primary">Add To Cart</button>
-</form>
+        <form asp-action="Add" asp-controller="Cart" method="post">
+            <button type="submit" name="id" value="@Model.OfficeProductId"
+                    class="btn btn-primary">Add To Cart</button>
+        </form>
+    </div>
+</div>

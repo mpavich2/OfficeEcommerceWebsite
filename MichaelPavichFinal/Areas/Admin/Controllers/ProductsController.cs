@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MichaelPavichFinal.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -65,7 +67,7 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
                 if (search.IsType)
                 {
                     options.Where = b => b.ProductTypeId.Contains(vm.SearchTerm);
-                    vm.Header = $"Search results for genre ID '{vm.SearchTerm}'";
+                    vm.Header = $"Search results for type ID '{vm.SearchTerm}'";
                 }
                 vm.Products = data.Products.List(options);
                 return View("SearchResults", vm);
@@ -84,6 +86,29 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (Request.Form.Files.Count == 0)
+                {
+                    Load(vm, "Add");
+                    ModelState.AddModelError("", "Please select an image.");
+                    return View("Product", vm);
+                }
+                foreach (var file in Request.Form.Files)
+                {
+                    Image img = new Image();
+                    img.Title = file.FileName;
+
+                    MemoryStream ms = new MemoryStream();
+                    file.CopyTo(ms);
+                    img.Data = ms.ToArray();
+
+                    ms.Close();
+                    ms.Dispose();
+
+                    data.Images.Insert(img);
+                    data.Save();
+
+                    vm.Product.ImageId = img.ImageId;
+                }
                 data.Products.Insert(vm.Product);
                 data.Save();
 

@@ -24,6 +24,10 @@ a {
   border-color: #1861ac;
 }
 
+.price {
+    color: #b30000 !important;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {

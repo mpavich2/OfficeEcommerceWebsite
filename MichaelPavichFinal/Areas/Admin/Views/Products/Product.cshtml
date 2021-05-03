@@ -10,7 +10,9 @@
 
 <h1>@action Office Product</h1>
 
-<form asp-action="@action" asp-area="Admin" method="post">
+<div asp-validation-summary="All" class="text-danger" ></div>
+
+<form asp-action="@action" asp-area="Admin" method="post" enctype="multipart/form-data">
 
     <input type="hidden" asp-for="Product.OfficeProductId" />
 
@@ -56,6 +58,17 @@
             </div>
             <div class="col-sm-6">
                 <span asp-validation-for="Product.ProductTypeId" class="text-danger"></span>
+            </div>
+        </div>
+    }
+    
+    @if (!Operation.IsDelete(action))
+    {
+        <div class="form-group row">
+            <div class="col-sm-2"><label>Image:</label></div>
+            <div class="col-sm-4">
+                <input type="file" id="file1"
+                       name="file1"/>
             </div>
         </div>
     }

@@ -31,6 +31,7 @@ namespace MichaelPavichFinal.Models
 
             modelBuilder.ApplyConfiguration(new SeedOfficeProducts());
             modelBuilder.ApplyConfiguration(new SeedProductTypes());
+            modelBuilder.ApplyConfiguration(new SeedImages());
         }
 
         /// <summary>

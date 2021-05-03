@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using MichaelPavichFinal.Models;
 using MichaelPavichFinal.Models.Grid;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MichaelPavichFinal.Controllers
 {
+    [Authorize]
     public class CartController : Controller
     {
         private Repository<OfficeProduct> data { get; set; }
