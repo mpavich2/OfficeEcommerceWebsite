@@ -1,43 +1,53 @@
+using MichaelPavichFinal.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;    // add this
-using MichaelPavichFinal.Models;
 
 namespace MichaelPavichFinal
 {
     /// <summary>
-    /// Defines the startup class.
+    ///     Defines the startup class.
     /// </summary>
     /// <author>
-    /// Michael Pavich
+    ///     Michael Pavich
     /// </author>
     /// <date>
-    /// Started 4/13/2021
+    ///     Started 5/3/2021
     /// </date>
     public class Startup
     {
+        #region Properties
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
+        ///     Gets the configuration.
+        /// </summary>
+        /// <value>
+        ///     The configuration.
+        /// </value>
+        public IConfiguration Configuration { get; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Startup" /> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
-        /// <summary>
-        /// Gets the configuration.
-        /// </summary>
-        /// <value>
-        /// The configuration.
-        /// </value>
-        public IConfiguration Configuration { get; }
+        #endregion
+
+        #region Methods
 
         // Use this method to add services to the container.
         /// <summary>
-        /// Configures the services.
+        ///     Configures the services.
         /// </summary>
         /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
@@ -50,21 +60,22 @@ namespace MichaelPavichFinal
             services.AddControllersWithViews().AddNewtonsoftJson();
 
             services.AddDbContext<OfficeProductContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("OfficeProductContext")));
+                options.UseSqlServer(this.Configuration.GetConnectionString("OfficeProductContext")));
 
             // add this
-            services.AddIdentity<User, IdentityRole>(options => {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<OfficeProductContext>()
-              .AddDefaultTokenProviders();
+            services.AddIdentity<User, IdentityRole>(options =>
+                    {
+                        options.Password.RequiredLength = 6;
+                        options.Password.RequireNonAlphanumeric = false;
+                        options.Password.RequireDigit = false;
+                        options.Password.RequireUppercase = false;
+                    }).AddEntityFrameworkStores<OfficeProductContext>()
+                    .AddDefaultTokenProviders();
         }
 
         // Use this method to configure the HTTP request pipeline.
         /// <summary>
-        /// Configures the specified application.
+        ///     Configures the specified application.
         /// </summary>
         /// <param name="app">The application.</param>
         public void Configure(IApplicationBuilder app)
@@ -75,8 +86,8 @@ namespace MichaelPavichFinal
 
             app.UseRouting();
 
-            app.UseAuthentication();   // add this
-            app.UseAuthorization();    // add this
+            app.UseAuthentication(); // add this
+            app.UseAuthorization(); // add this
 
             app.UseSession();
 
@@ -84,27 +95,29 @@ namespace MichaelPavichFinal
             {
                 // route for Admin area
                 endpoints.MapAreaControllerRoute(
-                    name: "admin",
-                    areaName: "Admin",
-                    pattern: "Admin/{controller=Book}/{action=Index}/{id?}");
+                    "admin",
+                    "Admin",
+                    "Admin/{controller=Book}/{action=Index}/{id?}");
 
                 // route for paging, sorting, and filtering
                 endpoints.MapControllerRoute(
-                    name: "",
-                    pattern: "{controller}/{action}/page/{pagenumber}/size/{pagesize}/sort/{sortfield}/{sortdirection}/filter/{type}");
+                    "",
+                    "{controller}/{action}/page/{pagenumber}/size/{pagesize}/sort/{sortfield}/{sortdirection}/filter/{type}");
 
                 // route for paging and sorting only
                 endpoints.MapControllerRoute(
-                    name: "",
-                    pattern: "{controller}/{action}/page/{pagenumber}/size/{pagesize}/sort/{sortfield}/{sortdirection}");
+                    "",
+                    "{controller}/{action}/page/{pagenumber}/size/{pagesize}/sort/{sortfield}/{sortdirection}");
 
                 // default route
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}/{slug?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}/{slug?}");
             });
 
             OfficeProductContext.CreateAdminUser(app.ApplicationServices).Wait();
         }
+
+        #endregion
     }
 }
