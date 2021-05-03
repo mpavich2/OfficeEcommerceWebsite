@@ -65,6 +65,7 @@ html {
 .homeBody {
     margin-bottom: 60px;
     background-image: url("../images/Background.png");
+    background-size: 100%;
 }
 
 body {
