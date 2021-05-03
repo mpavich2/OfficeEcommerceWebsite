@@ -1,39 +1,49 @@
 ﻿using System.Threading.Tasks;
 using MichaelPavichFinal.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MichaelPavichFinal.Controllers
 {
     /// <summary>
-    /// Defines the AccountController class. Inherits from controller.
+    ///     Defines the AccountController class. Inherits from controller.
     /// </summary>
     /// <author>
-    /// Michael Pavich
+    ///     Michael Pavich
     /// </author>
     /// <date>
-    /// Started 4/13/2021
+    ///     Started 5/3/2021
     /// </date>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class AccountController : Controller
     {
-        private UserManager<User> userManager;
-        private SignInManager<User> signInManager;
+        #region Data members
+
+        private readonly UserManager<User> userManager;
+        private readonly SignInManager<User> signInManager;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        ///     Initializes a new instance of the <see cref="AccountController" /> class.
         /// </summary>
         /// <param name="userMngr">The user MNGR.</param>
         /// <param name="signInMngr">The sign in MNGR.</param>
         public AccountController(UserManager<User> userMngr,
             SignInManager<User> signInMngr)
         {
-            userManager = userMngr;
-            signInManager = signInMngr;
+            this.userManager = userMngr;
+            this.signInManager = signInMngr;
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Gets the page to register a new user.
+        ///     Gets the page to register a new user.
         /// </summary>
         /// <returns>the register view</returns>
         [HttpGet]
@@ -43,60 +53,61 @@ namespace MichaelPavichFinal.Controllers
         }
 
         /// <summary>
-        /// Registers the new user into the database.
+        ///     Registers the new user into the database.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns>the same view if invalid; otherwise, the index view</returns>
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-
             if (ModelState.IsValid)
             {
-                var user = new MichaelPavichFinal.Models.User { UserName = model.Username, FirstName = model.FirstName, LastName = model.Lastname, Email = model.Email };
-                var result = await userManager.CreateAsync(user, model.Password);
+                var user = new User {
+                    UserName = model.Username, FirstName = model.FirstName, LastName = model.Lastname,
+                    Email = model.Email
+                };
+                var result = await this.userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: false);
+                    await this.signInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
-                else
+
+                foreach (var error in result.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
+                    ModelState.AddModelError("", error.Description);
                 }
             }
+
             return View(model);
         }
 
         /// <summary>
-        /// Logs the user out.
+        ///     Logs the user out.
         /// </summary>
         /// <returns>The index view.</returns>
         [HttpPost]
         public async Task<IActionResult> LogOut()
         {
-            await signInManager.SignOutAsync();
+            await this.signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 
         /// <summary>
-        /// Brings the user to the login view.
+        ///     Brings the user to the login view.
         /// </summary>
         /// <param name="returnURL">The return URL.</param>
         /// <returns>the login view</returns>
         [HttpGet]
         public IActionResult LogIn(string returnURL = "")
         {
-            var model = new LoginViewModel { ReturnUrl = returnURL };
+            var model = new LoginViewModel {ReturnUrl = returnURL};
             return View(model);
         }
 
         /// <summary>
-        /// Logs the user in.
+        ///     Logs the user in.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns>The index view if valid; otherwise, the same view</returns>
@@ -105,9 +116,9 @@ namespace MichaelPavichFinal.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(
-                    model.Username, model.Password, isPersistent: model.RememberMe,
-                    lockoutOnFailure: false);
+                var result = await this.signInManager.PasswordSignInAsync(
+                    model.Username, model.Password, model.RememberMe,
+                    false);
 
                 if (result.Succeeded)
                 {
@@ -116,23 +127,24 @@ namespace MichaelPavichFinal.Controllers
                     {
                         return Redirect(model.ReturnUrl);
                     }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
+
+                    return RedirectToAction("Index", "Home");
                 }
             }
+
             ModelState.AddModelError("", "Invalid username/password.");
             return View(model);
         }
 
         /// <summary>
-        /// Brings the user to the access denied view
+        ///     Brings the user to the access denied view
         /// </summary>
         /// <returns>the access denied view</returns>
         public ViewResult AccessDenied()
         {
             return View();
         }
+
+        #endregion
     }
 }

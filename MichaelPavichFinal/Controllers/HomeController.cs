@@ -1,25 +1,30 @@
-﻿using MichaelPavichFinal.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MichaelPavichFinal.Controllers
 {
+    /// <summary>
+    ///     Defines the HomeController class.
+    /// </summary>
+    /// <author>
+    ///     Michael Pavich
+    /// </author>
+    /// <date>
+    ///     Started 5/3/2021
+    /// </date>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class HomeController : Controller
     {
+        #region Methods
 
-        public HomeController()
-        {
-
-        }
-
+        /// <summary>
+        ///     Indexes this instance.
+        /// </summary>
+        /// <returns>the index view</returns>
         public IActionResult Index()
         {
             return View();
         }
+
+        #endregion
     }
 }

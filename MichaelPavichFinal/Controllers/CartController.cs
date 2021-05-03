@@ -1,35 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MichaelPavichFinal.Models;
+﻿using MichaelPavichFinal.Models;
 using MichaelPavichFinal.Models.Grid;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MichaelPavichFinal.Controllers
 {
+    /// <summary>
+    ///     Defines the CartController class.
+    /// </summary>
+    /// <author>
+    ///     Michael Pavich
+    /// </author>
+    /// <date>
+    ///     Started 5/3/2021
+    /// </date>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Authorize]
     public class CartController : Controller
     {
-        private Repository<OfficeProduct> data { get; set; }
-        public CartController(OfficeProductContext ctx) => data = new Repository<OfficeProduct>(ctx);
+        #region Properties
 
+        private Repository<OfficeProduct> Data { get; }
 
-        private Cart GetCart()
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="CartController" /> class.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        public CartController(OfficeProductContext ctx)
+        {
+            this.Data = new Repository<OfficeProduct>(ctx);
+        }
+
+        #endregion
+
+        #region Methods
+
+        private Cart getCart()
         {
             var cart = new Cart(HttpContext);
-            cart.Load(data);
+            cart.Load(this.Data);
             return cart;
         }
 
+        /// <summary>
+        ///     Gets the index page
+        /// </summary>
+        /// <returns>the index view</returns>
         public ViewResult Index()
         {
-            var cart = GetCart();
+            var cart = this.getCart();
             var builder = new OfficeProductsGridBuilder(HttpContext.Session);
 
-            var vm = new CartViewModel
-            {
+            var vm = new CartViewModel {
                 List = cart.List,
                 Subtotal = cart.Subtotal,
                 BookGridRoute = builder.CurrentRoute
@@ -37,11 +63,15 @@ namespace MichaelPavichFinal.Controllers
             return View(vm);
         }
 
+        /// <summary>
+        ///     Adds the product to the cart
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>the products list view</returns>
         [HttpPost]
         public RedirectToActionResult Add(int id)
         {
-            var product = data.Get(new QueryOptions<OfficeProduct>
-            {
+            var product = this.Data.Get(new QueryOptions<OfficeProduct> {
                 Include = "Type",
                 Where = b => b.OfficeProductId == id
             });
@@ -53,13 +83,12 @@ namespace MichaelPavichFinal.Controllers
             {
                 var dto = new OfficeProductDTO();
                 dto.Load(product);
-                CartItem item = new CartItem
-                {
+                var item = new CartItem {
                     Product = dto,
                     Quantity = 1
                 };
 
-                Cart cart = GetCart();
+                var cart = this.getCart();
                 cart.Add(item);
                 cart.Save();
 
@@ -70,11 +99,16 @@ namespace MichaelPavichFinal.Controllers
             return RedirectToAction("List", "Products", builder.CurrentRoute);
         }
 
+        /// <summary>
+        ///     Removes the cart item from the cart.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>the index view</returns>
         [HttpPost]
         public RedirectToActionResult Remove(int id)
         {
-            Cart cart = GetCart();
-            CartItem item = cart.GetById(id);
+            var cart = this.getCart();
+            var item = cart.GetById(id);
             cart.Remove(item);
             cart.Save();
 
@@ -82,10 +116,14 @@ namespace MichaelPavichFinal.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        ///     Clears all cart items
+        /// </summary>
+        /// <returns>the index view</returns>
         [HttpPost]
         public RedirectToActionResult Clear()
         {
-            Cart cart = GetCart();
+            var cart = this.getCart();
             cart.Clear();
             cart.Save();
 
@@ -93,26 +131,33 @@ namespace MichaelPavichFinal.Controllers
             return RedirectToAction("Index");
         }
 
-
+        /// <summary>
+        ///     Gets the edit cart item view
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>the index view</returns>
         public IActionResult Edit(int id)
         {
-            Cart cart = GetCart();
-            CartItem item = cart.GetById(id);
+            var cart = this.getCart();
+            var item = cart.GetById(id);
             if (item == null)
             {
                 TempData["message"] = "Unable to locate cart item";
                 return RedirectToAction("Index");
             }
-            else
-            {
-                return View(item);
-            }
+
+            return View(item);
         }
 
+        /// <summary>
+        ///     Edits the specified cart item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>the index view</returns>
         [HttpPost]
         public RedirectToActionResult Edit(CartItem item)
         {
-            Cart cart = GetCart();
+            var cart = this.getCart();
             cart.Edit(item);
             cart.Save();
 
@@ -120,6 +165,15 @@ namespace MichaelPavichFinal.Controllers
             return RedirectToAction("Index");
         }
 
-        public ViewResult Checkout() => View();
+        /// <summary>
+        ///     Gets the checkout page
+        /// </summary>
+        /// <returns>the checkout view</returns>
+        public ViewResult Checkout()
+        {
+            return View();
+        }
+
+        #endregion
     }
 }

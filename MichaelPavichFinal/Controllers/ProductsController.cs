@@ -1,26 +1,53 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MichaelPavichFinal.Models;
+﻿using MichaelPavichFinal.Models;
 using MichaelPavichFinal.Models.Grid;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MichaelPavichFinal.Controllers
 {
+    /// <summary>
+    ///     Defines the ProductsController class.
+    /// </summary>
+    /// <author>
+    ///     Michael Pavich
+    /// </author>
+    /// <date>
+    ///     Started 5/3/2021
+    /// </date>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class ProductsController : Controller
     {
+        #region Properties
 
-        private OfficeProductUnitOfWork data { get; set; }
-        public ProductsController(OfficeProductContext ctx) => data = new OfficeProductUnitOfWork(ctx);
+        private OfficeProductUnitOfWork Data { get; }
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ProductsController" /> class.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        public ProductsController(OfficeProductContext ctx)
+        {
+            this.Data = new OfficeProductUnitOfWork(ctx);
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        ///     Gets the list of products.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>the list view</returns>
         public IActionResult List(OfficeProductGridDTO values)
         {
             var builder = new OfficeProductsGridBuilder(HttpContext.Session, values,
-                defaultSortField: nameof(OfficeProduct.Name));
+                nameof(OfficeProduct.Name));
 
-            var options = new OfficeProductQueryOptions
-            {
+            var options = new OfficeProductQueryOptions {
                 Include = "Type",
                 OrderByDirection = builder.CurrentRoute.SortDirection,
                 PageNumber = builder.CurrentRoute.PageNumber,
@@ -28,21 +55,25 @@ namespace MichaelPavichFinal.Controllers
             };
             options.SortFilter(builder);
 
-            var vm = new OfficeProductListViewModel()
-            {
-                Products = data.Products.List(options),
-                ProductTypes = data.Types.List(new QueryOptions<ProductType>
-                {
+            var vm = new OfficeProductListViewModel {
+                Products = this.Data.Products.List(options),
+                ProductTypes = this.Data.Types.List(new QueryOptions<ProductType> {
                     OrderBy = g => g.Name
                 }),
-                Images = data.Images.List(new QueryOptions<Image>()),
+                Images = this.Data.Images.List(new QueryOptions<Image>()),
                 CurrentRoute = builder.CurrentRoute,
-                TotalPages = builder.GetTotalPages(data.Products.Count)
+                TotalPages = builder.GetTotalPages(this.Data.Products.Count)
             };
 
             return View(vm);
         }
 
+        /// <summary>
+        ///     Filters the products.
+        /// </summary>
+        /// <param name="filter">The filter.</param>
+        /// <param name="clear">if set to <c>true</c> [clear].</param>
+        /// <returns>the list view</returns>
         [HttpPost]
         public RedirectToActionResult Filter(string[] filter, bool clear = false)
         {
@@ -61,16 +92,22 @@ namespace MichaelPavichFinal.Controllers
             return RedirectToAction("List", builder.CurrentRoute);
         }
 
+        /// <summary>
+        ///     Gets the details about the specified product.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>the details view</returns>
         public ViewResult Details(int id)
         {
-            var product = data.Products.Get(new QueryOptions<OfficeProduct>
-            {
+            var product = this.Data.Products.Get(new QueryOptions<OfficeProduct> {
                 Include = "Type",
                 Where = b => b.OfficeProductId == id
             });
-            var image = data.Images.Get(product.ImageId);
+            var image = this.Data.Images.Get(product.ImageId);
             ViewBag.Url = image.Url();
             return View(product);
         }
+
+        #endregion
     }
 }

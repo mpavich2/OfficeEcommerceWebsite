@@ -3,31 +3,33 @@
 namespace MichaelPavichFinal.Models
 {
     /// <summary>
-    /// Holds information for registering a user.
+    ///     Holds information for registering a user.
     /// </summary>
     /// <author>
-    /// Michael Pavich
+    ///     Michael Pavich
     /// </author>
     /// <date>
-    /// Started 4/13/2021
+    ///     Started 5/3/2021
     /// </date>
     public class RegisterViewModel
     {
+        #region Properties
+
         /// <summary>
-        /// Gets or sets the username.
+        ///     Gets or sets the username.
         /// </summary>
         /// <value>
-        /// The username.
+        ///     The username.
         /// </value>
         [Required(ErrorMessage = "Please enter a username.")]
         [StringLength(255)]
         public string Username { get; set; }
 
         /// <summary>
-        /// Gets or sets the password.
+        ///     Gets or sets the password.
         /// </summary>
         /// <value>
-        /// The password.
+        ///     The password.
         /// </value>
         [Required(ErrorMessage = "Please enter a password.")]
         [DataType(DataType.Password)]
@@ -35,10 +37,10 @@ namespace MichaelPavichFinal.Models
         public string Password { get; set; }
 
         /// <summary>
-        /// Gets or sets the confirm password.
+        ///     Gets or sets the confirm password.
         /// </summary>
         /// <value>
-        /// The confirm password.
+        ///     The confirm password.
         /// </value>
         [Required(ErrorMessage = "Please confirm your password.")]
         [DataType(DataType.Password)]
@@ -46,33 +48,35 @@ namespace MichaelPavichFinal.Models
         public string ConfirmPassword { get; set; }
 
         /// <summary>
-        /// Gets or sets the first name.
+        ///     Gets or sets the first name.
         /// </summary>
         /// <value>
-        /// The first name.
+        ///     The first name.
         /// </value>
         [Required(ErrorMessage = "Please enter a first name.")]
         [StringLength(255)]
         public string FirstName { get; set; }
 
         /// <summary>
-        /// Gets or sets the lastname.
+        ///     Gets or sets the lastname.
         /// </summary>
         /// <value>
-        /// The lastname.
+        ///     The lastname.
         /// </value>
         [Required(ErrorMessage = "Please enter a last name.")]
         [StringLength(255)]
         public string Lastname { get; set; }
 
         /// <summary>
-        /// Gets or sets the email.
+        ///     Gets or sets the email.
         /// </summary>
         /// <value>
-        /// The email.
+        ///     The email.
         /// </value>
         [Required(ErrorMessage = "Please enter an email address.")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+
+        #endregion
     }
 }

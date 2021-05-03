@@ -1,13 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MichaelPavichFinal.Models.Grid;
+﻿using MichaelPavichFinal.Models.Grid;
 
 namespace MichaelPavichFinal.Models
 {
+    /// <summary>
+    ///     Defines the OfficeProductQueryOptions class.
+    /// </summary>
+    /// <author>
+    ///     Michael Pavich
+    /// </author>
+    /// <date>
+    ///     Started 5/3/2021
+    /// </date>
+    /// <seealso cref="MichaelPavichFinal.Models.QueryOptions{MichaelPavichFinal.Models.OfficeProduct}" />
     public class OfficeProductQueryOptions : QueryOptions<OfficeProduct>
     {
+        #region Methods
+
         public void SortFilter(OfficeProductsGridBuilder builder)
         {
             if (builder.IsFilterByProductType)
@@ -28,5 +36,7 @@ namespace MichaelPavichFinal.Models
                 OrderBy = b => b.Name;
             }
         }
+
+        #endregion
     }
 }

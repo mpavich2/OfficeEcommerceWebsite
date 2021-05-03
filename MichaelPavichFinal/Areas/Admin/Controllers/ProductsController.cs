@@ -1,48 +1,81 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using MichaelPavichFinal.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MichaelPavichFinal.Areas.Admin.Controllers
 {
+    /// <summary>
+    ///     Defines the ProductsController class.
+    /// </summary>
+    /// <author>
+    ///     Michael Pavich
+    /// </author>
+    /// <date>
+    ///     Started 5/3/2021
+    /// </date>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class ProductsController : Controller
     {
-        private OfficeProductUnitOfWork data { get; set; }
-        public ProductsController(OfficeProductContext ctx) => data = new OfficeProductUnitOfWork(ctx);
+        #region Properties
 
+        private OfficeProductUnitOfWork Data { get; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ProductsController" /> class.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        public ProductsController(OfficeProductContext ctx)
+        {
+            this.Data = new OfficeProductUnitOfWork(ctx);
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        ///     Indexes this instance.
+        /// </summary>
+        /// <returns>the index view</returns>
         public IActionResult Index()
         {
-            SearchData search = new SearchData(TempData);
+            var search = new SearchData(TempData);
             search.Clear();
 
             return View();
         }
 
+        /// <summary>
+        ///     Searches for the specified item.
+        /// </summary>
+        /// <param name="vm">The vm.</param>
+        /// <returns>the search view if valid; otherwise, the index view.</returns>
         [HttpPost]
         public RedirectToActionResult Search(SearchViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                var search = new SearchData(TempData)
-                {
+                var search = new SearchData(TempData) {
                     SearchTerm = vm.SearchTerm,
                     Type = vm.Type
                 };
                 return RedirectToAction("Search");
             }
-            else
-            {
-                return RedirectToAction("Index");
-            }
+
+            return RedirectToAction("Index");
         }
 
+        /// <summary>
+        ///     Gets the search results.
+        /// </summary>
+        /// <returns>the search results view if valid; otherwise, the index view</returns>
         [HttpGet]
         public ViewResult Search()
         {
@@ -50,13 +83,11 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
 
             if (search.HasSearchTerm)
             {
-                var vm = new SearchViewModel
-                {
+                var vm = new SearchViewModel {
                     SearchTerm = search.SearchTerm
                 };
 
-                var options = new QueryOptions<OfficeProduct>
-                {
+                var options = new QueryOptions<OfficeProduct> {
                     Include = "Type"
                 };
                 if (search.IsProduct)
@@ -64,23 +95,36 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
                     options.Where = b => b.Name.Contains(vm.SearchTerm);
                     vm.Header = $"Search results for product name '{vm.SearchTerm}'";
                 }
+
                 if (search.IsType)
                 {
                     options.Where = b => b.ProductTypeId.Contains(vm.SearchTerm);
                     vm.Header = $"Search results for type ID '{vm.SearchTerm}'";
                 }
-                vm.Products = data.Products.List(options);
+
+                vm.Products = this.Data.Products.List(options);
                 return View("SearchResults", vm);
             }
-            else
-            {
-                return View("Index");
-            }
+
+            return View("Index");
         }
 
+        /// <summary>
+        ///     Gets the page to add the product
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>the add view</returns>
         [HttpGet]
-        public ViewResult Add(int id) => GetBook(id, "Add");
+        public ViewResult Add(int id)
+        {
+            return this.getProduct(id, "Add");
+        }
 
+        /// <summary>
+        ///     Adds the product to the database.
+        /// </summary>
+        /// <param name="vm">The vm.</param>
+        /// <returns>the index view</returns>
         [HttpPost]
         public IActionResult Add(OfficeProductViewModel vm)
         {
@@ -88,80 +132,105 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
             {
                 if (Request.Form.Files.Count == 0)
                 {
-                    Load(vm, "Add");
+                    this.load(vm, "Add");
                     ModelState.AddModelError("", "Please select an image.");
                     return View("Product", vm);
                 }
+
                 foreach (var file in Request.Form.Files)
                 {
-                    Image img = new Image();
+                    var img = new Image();
                     img.Title = file.FileName;
 
-                    MemoryStream ms = new MemoryStream();
+                    var ms = new MemoryStream();
                     file.CopyTo(ms);
                     img.Data = ms.ToArray();
 
                     ms.Close();
                     ms.Dispose();
 
-                    data.Images.Insert(img);
-                    data.Save();
+                    this.Data.Images.Insert(img);
+                    this.Data.Save();
 
                     vm.Product.ImageId = img.ImageId;
                 }
-                data.Products.Insert(vm.Product);
-                data.Save();
+
+                this.Data.Products.Insert(vm.Product);
+                this.Data.Save();
 
                 TempData["message"] = $"{vm.Product.Name} added to Products.";
                 return RedirectToAction("Index");
             }
-            else
-            {
-                Load(vm, "Add");
-                return View("Product", vm);
-            }
+
+            this.load(vm, "Add");
+            return View("Product", vm);
         }
 
+        /// <summary>
+        ///     Gets the page to edit the specified product
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet]
-        public ViewResult Edit(int id) => GetBook(id, "Edit");
+        public ViewResult Edit(int id)
+        {
+            return this.getProduct(id, "Edit");
+        }
 
+        /// <summary>
+        ///     Edits the specified product.
+        /// </summary>
+        /// <param name="vm">The vm.</param>
+        /// <returns>the search view if valid; otherwise, the product view</returns>
         [HttpPost]
         public IActionResult Edit(OfficeProductViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                data.Products.Update(vm.Product);
-                data.Save();
+                this.Data.Products.Update(vm.Product);
+                this.Data.Save();
 
                 TempData["message"] = $"{vm.Product.Name} updated.";
                 return RedirectToAction("Search");
             }
-            else
-            {
-                Load(vm, "Edit");
-                return View("Product", vm);
-            }
+
+            this.load(vm, "Edit");
+            return View("Product", vm);
         }
 
+        /// <summary>
+        ///     Gets the page to delete a product.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet]
-        public ViewResult Delete(int id) => GetBook(id, "Delete");
+        public ViewResult Delete(int id)
+        {
+            return this.getProduct(id, "Delete");
+        }
 
+        /// <summary>
+        ///     Deletes the specified product.
+        /// </summary>
+        /// <param name="vm">The vm.</param>
+        /// <returns>the search view.</returns>
         [HttpPost]
         public IActionResult Delete(OfficeProductViewModel vm)
         {
-            data.Products.Delete(vm.Product);
-            data.Save();
+            this.Data.Products.Delete(vm.Product);
+            this.Data.Save();
             TempData["message"] = $"{vm.Product.Name} removed from Products.";
             return RedirectToAction("Search");
         }
 
-        private ViewResult GetBook(int id, string operation)
+        private ViewResult getProduct(int id, string operation)
         {
             var product = new OfficeProductViewModel();
-            Load(product, operation, id);
+            this.load(product, operation, id);
             return View("Product", product);
         }
-        private void Load(OfficeProductViewModel vm, string op, int? id = null)
+
+        private void load(OfficeProductViewModel vm, string op, int? id = null)
         {
             if (Operation.IsAdd(op))
             {
@@ -169,16 +238,17 @@ namespace MichaelPavichFinal.Areas.Admin.Controllers
             }
             else
             {
-                vm.Product = data.Products.Get(new QueryOptions<OfficeProduct>
-                {
+                vm.Product = this.Data.Products.Get(new QueryOptions<OfficeProduct> {
                     Include = "Type",
                     Where = op => op.OfficeProductId == (id ?? vm.Product.OfficeProductId)
                 });
             }
-            vm.Types = data.Types.List(new QueryOptions<ProductType>
-            {
+
+            vm.Types = this.Data.Types.List(new QueryOptions<ProductType> {
                 OrderBy = pt => pt.Name
             });
         }
+
+        #endregion
     }
 }
