@@ -10,8 +10,10 @@ Here is the home page for the website.
 
 # How To Use
 
-Clone the project into visual studio. Open the Package Manager Console and run Update-Database. This loads the database with some seed data.
-After that, the website is all ready to use.
+- Clone the project into visual studio. 
+- Open the Package Manager Console and run Update-Database. This loads the database with some seed data.
+- After that, the website is all ready to use.
+- To access the admin account, the username is "admin" and the password is "password"
 
 # Features
 
